@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Notes over audio",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Highlights and Notes on a YouTube video's Transcript, kept where they were said.",
   "minimum_chrome_version": "116",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0bzrEOga9Im99mF0QYggYAnOj/Dk4wDZPt6erPZHDaqGvbXM/Ckfr3Vrnba3OgEQcR8zPJQRbQD9HYUAiu8oaoaSpQwsaBXZhtBPoqlvnn6/pLZlunVe3q+8MMFMZBfLkO+Sakqzs3AQjOMg0sxqUy1dJS0n8d6kLjKw2NxZghTHx8TKtKEDbkD74DzjyQAGUtiE5aJX/RXjfgSVrgj0GkqBtE2oe6ffFS4ko/T2W9/yABj0qFx3kSsXnquryMOv5J/d0chiZKWzVdwmBCznNkjZoSRDwa+3ZMNJYuYx8UEiDw2WvZBX0onvC+3NItjMX5TEK76FmAv2Ao0Tqrv8IQIDAQAB",
   "permissions": ["sidePanel", "storage"],
-  "action": { "default_title": "Open Notes over audio" },
+  "icons": { "16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png" },
+  "action": { "default_title": "Open Notes over audio", "default_icon": { "16": "icons/icon-16.png", "32": "icons/icon-32.png" } },
   "background": { "service_worker": "extension/service-worker.js", "type": "module" },
   "content_scripts": [
     {

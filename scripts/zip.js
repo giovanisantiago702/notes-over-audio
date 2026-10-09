@@ -8,7 +8,8 @@
 // the one to choose at "Load unpacked":
 //
 //   notes-over-audio-<version>/
-//     manifest.json, core/, extension/   what `node scripts/build.js` makes
+//     manifest.json, core/, extension/,  what `node scripts/build.js` makes
+//     icons/
 //     README.md                          the one at the root of the repository
 //
 // The extension was once a folder inside this one, beside the README. The first
