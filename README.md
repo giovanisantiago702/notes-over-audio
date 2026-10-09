@@ -17,15 +17,17 @@ It runs in Chrome's side panel, on `www.youtube.com`. There is no account and no
 
 ## Install
 
-It is not in the Chrome Web Store yet, so it is loaded by hand. Nothing is compiled: `src` is the extension as Chrome loads it.
+It is not in the Chrome Web Store yet, so it is loaded by hand.
 
-1. Get this repository onto your computer, by cloning it or by downloading and unzipping it, and put it somewhere it can stay. Chrome keeps no copy of the extension. It runs it from that folder.
+1. Download the zip from [the latest release](https://github.com/giovanisantiago702/notes-over-audio/releases/latest) and unzip it. You get one folder, named for the extension and its version. Put it somewhere it can stay: Chrome keeps no copy of the extension. It runs it from that folder.
 2. Open `chrome://extensions` and switch on "Developer mode", at the top right. Leave it on: with it off, Chrome switches the extension off.
-3. Click "Load unpacked" and choose the folder that has `manifest.json` directly inside it. In this repository that is `src`. In a zip made with `npm run zip`, it is the unzipped folder itself.
+3. Click "Load unpacked" and choose that folder, the one with `manifest.json` directly inside it.
 4. Pin "Notes over audio" from the puzzle-piece menu beside the address bar. It has no icon of its own yet, so go by the name.
 5. Reload any YouTube tab that was already open. The extension starts only in pages loaded after it was installed.
 
 It needs Chrome 116 or later, on a computer.
+
+From a clone of this repository, nothing needs building. Choose `src` at "Load unpacked": it is the extension as Chrome loads it.
 
 ## Use
 
