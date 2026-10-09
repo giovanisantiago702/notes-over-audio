@@ -216,7 +216,7 @@ const openExtensionsPage = async (context) => {
 };
 const asLoaded = async (extensionsPage) => {
   const all = await extensionsPage.evaluate(() => new Promise((done) => chrome.developerPrivate.getExtensionsInfo({}, done)));
-  const info = all.find((extension) => extension.name === 'Notes over audio');
+  const info = all.find((extension) => extension.name === 'Notes Over Audio');
   return (
     info && {
       id: info.id,

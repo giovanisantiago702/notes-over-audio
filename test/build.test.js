@@ -31,7 +31,7 @@ test('the built folder is a Manifest V3 extension holding every file its manifes
   const named = [manifest.background.service_worker, ...manifest.content_scripts.flatMap((script) => script.js)];
 
   assert.equal(manifest.manifest_version, 3);
-  assert.equal(manifest.name, 'Notes over audio');
+  assert.equal(manifest.name, 'Notes Over Audio');
   assert.deepEqual(
     named.filter((file) => !existsSync(join(built, file))),
     [],

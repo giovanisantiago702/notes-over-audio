@@ -1,6 +1,6 @@
 # Privacy
 
-Notes over audio keeps what you mark and write on your own computer, and sends it nowhere.
+Notes Over Audio keeps what you mark and write on your own computer, and sends it nowhere.
 
 - **What it stores.** Your Highlights and Notes, with the id, title and channel of each video they are on, and one setting. They are kept inside Chrome, in the profile the extension is installed in.
 - **What it sends.** Nothing of yours. It has no server, no account, no analytics and no advertising.

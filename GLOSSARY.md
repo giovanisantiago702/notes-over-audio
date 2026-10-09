@@ -1,4 +1,4 @@
-# Notes over audio (working name)
+# Notes Over Audio (working name)
 
 A video's transcript treated as a document a person can mark up, where every mark keeps its place in the video's time.
 

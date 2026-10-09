@@ -1,4 +1,4 @@
-# Notes over audio 0.2
+# Notes Over Audio 0.3
 
 A Chrome extension that puts the words spoken in a YouTube video beside the video, and lets you mark them as you would a page. Highlight what was said, write a note at the point where you thought of it, and find both on the same words when you open the video again.
 
@@ -22,7 +22,7 @@ It is not in the Chrome Web Store yet, so it is loaded by hand.
 1. Download the zip from [the latest release](https://github.com/giovanisantiago702/notes-over-audio/releases/latest) and unzip it. You get one folder, named for the extension and its version. Put it somewhere it can stay: Chrome keeps no copy of the extension. It runs it from that folder.
 2. Open `chrome://extensions` and switch on "Developer mode", at the top right. Leave it on: with it off, Chrome switches the extension off.
 3. Click "Load unpacked" and choose that folder, the one with `manifest.json` directly inside it.
-4. Pin "Notes over audio" from the puzzle-piece menu beside the address bar, so that its icon stays in the toolbar.
+4. Pin "Notes Over Audio" from the puzzle-piece menu beside the address bar, so that its icon stays in the toolbar.
 5. Reload any YouTube tab that was already open. The extension starts only in pages loaded after it was installed.
 
 It needs Chrome 116 or later, on a computer.
