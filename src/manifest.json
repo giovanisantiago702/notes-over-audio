@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Notes over audio",
+  "version": "0.1",
+  "description": "Highlights and Notes on a YouTube video's Transcript, kept where they were said.",
+  "minimum_chrome_version": "116",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0bzrEOga9Im99mF0QYggYAnOj/Dk4wDZPt6erPZHDaqGvbXM/Ckfr3Vrnba3OgEQcR8zPJQRbQD9HYUAiu8oaoaSpQwsaBXZhtBPoqlvnn6/pLZlunVe3q+8MMFMZBfLkO+Sakqzs3AQjOMg0sxqUy1dJS0n8d6kLjKw2NxZghTHx8TKtKEDbkD74DzjyQAGUtiE5aJX/RXjfgSVrgj0GkqBtE2oe6ffFS4ko/T2W9/yABj0qFx3kSsXnquryMOv5J/d0chiZKWzVdwmBCznNkjZoSRDwa+3ZMNJYuYx8UEiDw2WvZBX0onvC+3NItjMX5TEK76FmAv2Ao0Tqrv8IQIDAQAB",
+  "permissions": ["sidePanel", "storage"],
+  "action": { "default_title": "Open Notes over audio" },
+  "background": { "service_worker": "extension/service-worker.js", "type": "module" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["extension/youtube-page.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["extension/youtube-player.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}

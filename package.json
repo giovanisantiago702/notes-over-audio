@@ -1,0 +1,15 @@
+{
+  "name": "notes-over-audio",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.26.0",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "build": "node scripts/build.js",
+    "zip": "node scripts/zip.js",
+    "check:browser": "node scripts/build.js && node scripts/check-in-browser.js"
+  },
+  "devDependencies": {
+    "playwright-core": "1.61.0"
+  }
+}

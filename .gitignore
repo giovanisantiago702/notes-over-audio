@@ -1,0 +1,17 @@
+# Installed packages
+node_modules/
+
+# Build output: the folder Chrome loads unpacked
+dist/
+
+# The zip that is sent to someone: the built folder and the README
+zip/
+
+# The captions of real videos that some tests read. They are their makers', and are not kept here
+test/captions/
+
+# Worktrees the build agents work in
+.claude/worktrees/
+
+# The Finder's own files
+.DS_Store

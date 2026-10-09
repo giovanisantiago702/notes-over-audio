@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Notes over audio</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 14px/1.45 system-ui, sans-serif; margin: 0; padding: 12px 14px 24px; }
+  h1 { font-size: 15px; margin: 0; }
+  /* The title arrives about a second after the video does. */
+  h1:empty::before { content: "…"; }
+  #channel { margin: 2px 0 0; opacity: .7; }
+  #no-video { margin: 0; opacity: .7; }
+
+  /* The export: the button that copies and its checkbox, in a strip that stays at the top of the
+     panel while the video's title and the Transcript scroll away under it (panel-export.js). */
+  #export {
+    position: sticky; top: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px;
+    margin: -12px -14px 10px; padding: 6px 14px; font-size: 12.5px;
+    background: Canvas; border-bottom: 1px solid rgba(128, 128, 128, .35);
+  }
+  #export[hidden] { display: none; }
+  #copy-markdown { font: inherit; margin-right: 6px; }
+  #include-transcript { margin: 0; }
+  #include-transcript + label { opacity: .8; cursor: pointer; user-select: none; }
+  /* With no Transcript on show there is none to include. */
+  #include-transcript:disabled + label { opacity: .4; cursor: default; }
+
+  /* Where the Transcript goes: one plain line, or one sentence per line. */
+  #transcript-line { margin: 14px 0 0; opacity: .7; }
+  #transcript { margin-top: 14px; }
+  .sentence { margin: 0; padding: 3px 0; }
+  .sentence.new-speaker { margin-top: 10px; }
+  .sentence.sound { font-size: 12.5px; font-style: italic; opacity: .6; padding: 1px 0; }
+
+  /* Following playback. A line's band reaches both edges of the panel; its text stays where it was. */
+  #transcript .sentence { margin-inline: -14px; padding-inline: 14px; }
+  /* Room under the last line, so that it too can be held where the others are (follow-playback.js). */
+  #transcript { padding-bottom: 42vh; }
+  /* A click on a line jumps the video there. */
+  #transcript .sentence:hover { background: rgba(128, 128, 128, .13); }
+  /* The line being spoken. */
+  #transcript .sentence.spoken { background: rgba(66, 133, 244, .2); }
+  /* It sits above whichever box is docked at the bottom; panel-notes.js says how tall that is. */
+  #back-to-now {
+    position: fixed; right: 12px; bottom: calc(var(--docked, 0px) + 12px); padding: 5px 12px;
+    font: inherit; font-size: 12.5px; color: CanvasText; background: Canvas;
+    border: 1px solid rgba(128, 128, 128, .45); border-radius: 999px; box-shadow: 0 1px 5px rgba(0, 0, 0, .25); cursor: pointer;
+  }
+
+  /* A Highlight: a mark inside each line it covers, in the prototype's yellow.
+     Where two share words, the one inside is darker. */
+  mark[data-highlight] { background: #ffe27a; color: #16181d; border-radius: 2px; cursor: pointer; }
+  mark[data-highlight] mark[data-highlight] { background: #ffd23f; }
+  mark[data-highlight].open { outline: 2px solid #e9b800; }
+  /* The other two colours a Highlight can be. A mark that names no colour is the yellow above.
+     Each has the same three shades: its own, a darker one inside another mark, and its edge when open. */
+  mark[data-colour="green"] { background: #93dfc4; }
+  mark[data-highlight] mark[data-colour="green"] { background: #62cda6; }
+  mark[data-colour="green"].open { outline-color: #1f9d74; }
+  mark[data-colour="purple"] { background: #c8b4ff; }
+  mark[data-highlight] mark[data-colour="purple"] { background: #b09aff; }
+  mark[data-colour="purple"].open { outline-color: #7a52e0; }
+  /* The box that opens for a Highlight, docked at the bottom of the panel. */
+  #highlight { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 14px 12px; background: Canvas; border-top: 1px solid GrayText; }
+  #highlight-words { margin: 0 0 8px; max-height: 4.4em; overflow: auto; }
+  #highlight-words::before { content: "“"; }
+  #highlight-words::after { content: "”"; }
+  #highlight button { font: inherit; margin-right: 6px; }
+  /* The colours it can be given, each a round swatch of its own colour. The one it is in has a ring. */
+  #highlight-colours { white-space: nowrap; }
+  #highlight-colours button { width: 22px; height: 22px; padding: 0; vertical-align: middle; border: 1px solid rgba(128, 128, 128, .6); border-radius: 50%; cursor: pointer; }
+  #colour-yellow { background: #ffe27a; }
+  #colour-green { background: #93dfc4; }
+  #colour-purple { background: #c8b4ff; }
+  #highlight-colours button[aria-pressed="true"] { box-shadow: 0 0 0 2px Canvas, 0 0 0 4px CanvasText; }
+
+  /* Notes. One is written in a field: in the box docked at the bottom for a Note at a Moment, and
+     in the box above for the Note on a Highlight. Enter saves and Escape cancels. */
+  #highlight-note, #note-text {
+    display: block; box-sizing: border-box; width: 100%; margin: 0 0 4px; padding: 5px 7px;
+    font: inherit; resize: none; border: 1px solid rgba(128, 128, 128, .6); border-radius: 6px;
+  }
+  .note-keys { margin: 0 0 8px; font-size: 11.5px; opacity: .6; }
+  /* The docked box: an offer to write a Note at this Moment, or the Note being written. */
+  #note-box { position: fixed; left: 0; right: 0; bottom: 0; background: Canvas; border-top: 1px solid GrayText; }
+  #write-note { display: block; width: 100%; padding: 11px 14px 7px; font: inherit; text-align: left; color: GrayText; background: none; border: 0; cursor: pointer; }
+  #write-note:hover { color: CanvasText; }
+  #write-note[hidden] { display: none; } /* while a Note is being written, the offer gives way to it */
+  #note-editor { padding: 10px 14px 4px; }
+  #note-at { margin: 0 0 6px; font-size: 12.5px; opacity: .7; }
+  /* "Pause the video while I write a Note": off until it is ticked, and remembered. It is in the
+     docked box, where it is in view however far the Transcript has scrolled. */
+  #pause-option { display: flex; align-items: center; gap: 6px; padding: 0 14px 10px; font-size: 12.5px; opacity: .8; cursor: pointer; user-select: none; }
+  #pause-option input { margin: 0; }
+  /* A saved Note, drawn between the lines of the Transcript: after its Highlight, or at its Moment.
+     Its left edge is its Highlight's colour, and grey when it is at a Moment. */
+  .note {
+    display: flex; gap: 8px; align-items: baseline; margin: 3px 0 7px 16px; padding: 5px 8px;
+    font-size: 13px; line-height: 1.4; background: rgba(128, 128, 128, .13);
+    border-left: 3px solid #e9b800; border-radius: 0 6px 6px 0; user-select: none;
+  }
+  .note[data-colour="green"] { border-left-color: #1f9d74; }
+  .note[data-colour="purple"] { border-left-color: #7a52e0; }
+  .note.at-moment { border-left-color: GrayText; }
+  .note-time { flex: none; padding: 1px 5px; font: 11px ui-monospace, Menlo, monospace; color: inherit; background: rgba(128, 128, 128, .2); border: 0; border-radius: 5px; cursor: pointer; }
+  .note-time:hover { background: rgba(66, 133, 244, .45); }
+  .note-text { flex: 1; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .note.on-highlight .note-text { cursor: pointer; }
+  .note-delete { flex: none; padding: 0 2px; font-size: 15px; line-height: 1; color: GrayText; background: none; border: 0; cursor: pointer; }
+  .note-delete:hover { color: #b42318; }
+
+  /* With no Transcript on show: everything saved for the video as one list, in time order, under the
+     line that says why there is none (panel-saved.js). An entry is its time, and beside it a
+     Highlight's saved words in its colour, with its Note under them, or a Note at a Moment.
+     A click on an entry jumps the video there. Nothing in the list can be selected. */
+  #saved { margin-top: 10px; padding-bottom: calc(var(--docked, 0px) + 16px); user-select: none; }
+  .entry { display: flex; gap: 8px; align-items: baseline; margin-inline: -14px; padding: 5px 14px; cursor: pointer; }
+  .entry:hover { background: rgba(128, 128, 128, .13); }
+  .entry-time { flex: none; min-width: 3.3em; padding: 1px 5px; font: 11px ui-monospace, Menlo, monospace; color: inherit; background: rgba(128, 128, 128, .2); border: 0; border-radius: 5px; cursor: pointer; }
+  .entry:hover .entry-time { background: rgba(66, 133, 244, .45); }
+  .entry-body { flex: 1; min-width: 0; }
+  .entry-words { margin: 0; }
+  .entry-words mark { padding: 1px 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  /* A Note in the list has its entry's time beside it, and shows none of its own. */
+  .entry .note { margin: 0; }
+  .entry .entry-words + .note { margin-top: 5px; }
+  .entry .note-time { display: none; }
+</style>
+</head>
+<body>
+<div id="export" hidden>
+  <button id="copy-markdown" type="button" aria-live="polite">Copy as Markdown</button>
+  <input type="checkbox" id="include-transcript"><label for="include-transcript">Include the full transcript</label>
+</div>
+<header id="video" hidden>
+  <h1 id="title"></h1>
+  <p id="channel"></p>
+</header>
+<p id="no-video" hidden>This tab is not on a YouTube video.</p>
+<p id="transcript-line" hidden></p>
+<section id="saved" aria-label="Saved for this video" hidden></section>
+<main id="transcript" hidden></main>
+<button id="back-to-now" type="button" hidden>Back to now</button>
+<aside id="highlight" hidden>
+  <p id="highlight-words"></p>
+  <textarea id="highlight-note" rows="2" placeholder="A Note on this highlight…" aria-label="Note on this highlight"></textarea>
+  <p class="note-keys">Enter saves · Esc cancels</p>
+  <button id="remove-highlight" type="button">Remove highlight</button>
+  <button id="close-highlight" type="button">Close</button>
+  <span id="highlight-colours" role="group" aria-label="Colour">
+    <button id="colour-yellow" type="button" data-colour="yellow" title="Yellow" aria-label="Yellow"></button>
+    <button id="colour-green" type="button" data-colour="green" title="Green" aria-label="Green"></button>
+    <button id="colour-purple" type="button" data-colour="purple" title="Purple" aria-label="Purple"></button>
+  </span>
+</aside>
+<footer id="note-box" hidden>
+  <button id="write-note" type="button">Write a Note at this Moment… (N)</button>
+  <div id="note-editor" hidden>
+    <p id="note-at"></p>
+    <textarea id="note-text" rows="2" placeholder="A thought of your own…" aria-label="Note at this Moment"></textarea>
+    <p class="note-keys">Enter saves · Esc cancels</p>
+  </div>
+  <label id="pause-option"><input type="checkbox" id="pause-while-writing"> Pause the video while I write a Note</label>
+</footer>
+<script type="module" src="side-panel.js"></script>
+</body>
+</html>
